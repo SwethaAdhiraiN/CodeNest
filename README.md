@@ -19,7 +19,15 @@ To develop and run CodeNest locally:
     npm run dev
     ```
 
-Frontend is served from `/frontend/dist` by default.
+**IMPORTANT: Development Assets and Proxy Routing**
+
+- When running in development mode (`npm run dev`), _all_ frontend static assets and hot-reload modules (e.g., `main.jsx`, `@react-refresh` runtime, etc.) must be requested from the Vite dev server on **port 5173**.  
+- The Flask backend (port 8000) should only handle `/api/...` HTTP requests. It should never serve frontend dev assets when developing.
+- Do **not** access the frontend through the backend's port (e.g., `http://localhost:8000/`). Instead, open your browser to [http://localhost:5173](http://localhost:5173) to ensure assets are served directly by Vite.
+- The Vite dev server proxies `/api` requests to the backend (`http://localhost:8000`), but all other static/frontend asset requests (including `main.jsx`, `@react-refresh`) are resolved by Vite alone.
+- If you see 404 errors for `main.jsx` or any `@react-refresh` resource when accessing on port 5173, make sure you are not misrouting those requests to the backend. Check your terminal logs and browser devtools for asset request origins.
+
+Frontend is served from `/frontend/dist` by default (after `vite build`). In production deployments, the backend Flask server serves the built frontend.
 
 Data is stored as JSON files in `backend/data/`.
 
