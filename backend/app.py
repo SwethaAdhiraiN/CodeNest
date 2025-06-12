@@ -364,10 +364,39 @@ def activity_feed():
 
 ############## Static file handling (deploy frontend) ##############
 
+import sys
+
+# PUBLIC_INTERFACE
+def is_dev_mode():
+    """Detect if running in development mode (i.e., with Vite dev server active)."""
+    # Common heuristics: flask debug on, or explicit env var, or running as main
+    return (
+        os.environ.get("FLASK_ENV") == "development"
+        or "dev" in sys.argv
+        or os.environ.get("CODENEST_DEV") == "1"
+        or app.debug
+    )
+
 @app.route('/', defaults={'u_path': ''})
 @app.route('/<path:u_path>')
 def serve_frontend(u_path):
-    """Serve frontend"""
+    """
+    Serve frontend static files (PRODUCTION ONLY).
+
+    In development, frontend should be served from Vite dev server (port 5173).
+    If a frontend asset is requested from Flask in dev mode, show a helpful message.
+    """
+    if is_dev_mode():
+        # Help developer: if this route is hit in development, warn about dev port usage
+        return (
+            "You are running in development mode. "
+            "Frontend assets (including main.jsx and @react-refresh) "
+            "should be requested from the Vite dev server at http://localhost:5173/.<br>"
+            "Do NOT access the frontend through http://localhost:8000.<br>"
+            "Open <a href='http://localhost:5173'>http://localhost:5173</a> in your browser.<br>"
+            "If you see this message, your assets are being misrouted.<br>", 400
+        )
+    # Production: Serve built frontend
     if u_path and os.path.exists(os.path.join(app.static_folder, u_path)):
         return send_from_directory(app.static_folder, u_path)
     else:
