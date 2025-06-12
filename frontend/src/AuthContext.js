@@ -19,6 +19,9 @@ export function AuthProvider({ children }) {
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState(null);
 
+  // For UI indicator: success message for sign-in/sign-up
+  const [authSuccess, setAuthSuccess] = useState(null);
+
   // PUBLIC_INTERFACE
   const isAuthenticated = Boolean(authToken && currentUser);
 
@@ -26,6 +29,7 @@ export function AuthProvider({ children }) {
   const login = useCallback(async ({ username, password }) => {
     setAuthLoading(true);
     setAuthError(null);
+    setAuthSuccess(null);
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
@@ -48,10 +52,17 @@ export function AuthProvider({ children }) {
       setCurrentUser(body.user);
       setAuthLoading(false);
       setAuthError(null);
+
+      // Set success message for sign in
+      setAuthSuccess("Signed in successfully!");
+      // Clear success after a short timeout (for possible feedback)
+      setTimeout(() => setAuthSuccess(null), 1800);
+
       return body.user;
     } catch (err) {
       setAuthLoading(false);
       setAuthError(err.message || "Login failed");
+      setAuthSuccess(null);
       throw err;
     }
   }, []);
@@ -60,6 +71,7 @@ export function AuthProvider({ children }) {
   const register = useCallback(async ({ username, password, role }) => {
     setAuthLoading(true);
     setAuthError(null);
+    setAuthSuccess(null);
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
@@ -75,14 +87,20 @@ export function AuthProvider({ children }) {
       if (!res.ok) {
         throw new Error(body.error || "Registration failed");
       }
+
+      // Set success registration message (before auto login)
+      setAuthSuccess("Registration successful! Signing in...");
       // Auto sign-in after registration
       await login({ username, password });
+
       setAuthLoading(false);
       setAuthError(null);
+
       return true;
     } catch (err) {
       setAuthLoading(false);
       setAuthError(err.message || "Registration failed");
+      setAuthSuccess(null);
       throw err;
     }
   }, [login]);
@@ -94,6 +112,9 @@ export function AuthProvider({ children }) {
     setAuthToken(null);
     setCurrentUser(null);
     setAuthError(null);
+    setAuthSuccess(null);
+    // Optionally: force reload to ensure all state resets, or navigate to auth view if using a router
+    // window.location.reload();
   }, []);
 
   // Utility fetch wrapper to include JWT
@@ -125,6 +146,7 @@ export function AuthProvider({ children }) {
     currentUser,
     authLoading,
     authError,
+    authSuccess, // feedback for the UI
     isAuthenticated,
     login,
     logout,

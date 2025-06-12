@@ -1,8 +1,46 @@
 import React, { useState } from 'react';
 import './AuthForms.css';
 
+// Small spinner SVG for in-button/progress indicator UX
+function Spinner({ size = 20 }) {
+  return (
+    <span
+      className="auth-spinner"
+      style={{
+        display: "inline-block",
+        verticalAlign: "middle",
+        marginRight: 6,
+        width: size,
+        height: size,
+      }}
+    >
+      <svg width={size} height={size} viewBox="0 0 50 50">
+        <circle
+          cx="25"
+          cy="25"
+          r="20"
+          fill="none"
+          stroke="#3b82f6"
+          strokeWidth="5"
+          strokeDasharray="90"
+          strokeDashoffset="40"
+          strokeLinecap="round"
+        >
+          <animateTransform
+            attributeName="transform"
+            type="rotate"
+            values="0 25 25;360 25 25"
+            dur="0.8s"
+            repeatCount="indefinite"
+          />
+        </circle>
+      </svg>
+    </span>
+  );
+}
+
 // PUBLIC_INTERFACE
-export function SignInForm({ onSubmit, loading = false, error = null }) {
+export function SignInForm({ onSubmit, loading = false, error = null, success = null }) {
   /** Render Sign In form for user authentication */
   const [form, setForm] = useState({ username: '', password: '' });
   const [touched, setTouched] = useState({}); // For displaying validation only onBlur/submit
@@ -17,17 +55,18 @@ export function SignInForm({ onSubmit, loading = false, error = null }) {
   const errors = validate();
 
   const handleChange = (e) => {
-    setForm({...form, [e.target.name]: e.target.value});
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
   const handleBlur = (e) => {
-    setTouched({...touched, [e.target.name]: true});
+    setTouched({ ...touched, [e.target.name]: true });
   };
   const handleSubmit = (e) => {
     e.preventDefault();
-    setTouched({username: true, password: true});
+    setTouched({ username: true, password: true });
     setFormError(null);
     if (Object.keys(validate()).length === 0 && !loading) {
-      onSubmit && onSubmit(form).catch(err => setFormError(err.message));
+      onSubmit &&
+        onSubmit(form).catch((err) => setFormError(err.message));
     }
   };
 
@@ -46,9 +85,9 @@ export function SignInForm({ onSubmit, loading = false, error = null }) {
           disabled={loading}
           autoComplete="username"
         />
-        {touched.username && errors.username &&
+        {touched.username && errors.username && (
           <div className="form-error">{errors.username}</div>
-        }
+        )}
       </div>
       <div className="form-group">
         <label htmlFor="signin-password">Password</label>
@@ -62,25 +101,31 @@ export function SignInForm({ onSubmit, loading = false, error = null }) {
           disabled={loading}
           autoComplete="current-password"
         />
-        {touched.password && errors.password &&
+        {touched.password && errors.password && (
           <div className="form-error">{errors.password}</div>
-        }
+        )}
       </div>
       <button
         type="submit"
         className="btn"
         disabled={loading || Object.keys(errors).length !== 0}
       >
+        {loading && <Spinner size={17} />}
         {loading ? 'Signing in...' : 'Sign In'}
       </button>
       {formError && <div className="form-error">{formError}</div>}
       {error && <div className="form-error">{error}</div>}
+      {success && (
+        <div className="form-success" style={{ color: "#409b58", fontWeight: 600, marginTop: 6 }}>
+          {success}
+        </div>
+      )}
     </form>
   );
 }
 
 // PUBLIC_INTERFACE
-export function SignUpForm({ onSubmit, loading = false, error = null }) {
+export function SignUpForm({ onSubmit, loading = false, error = null, success = null }) {
   /** Render Sign Up form for user registration */
   const roles = ['contributor', 'viewer'];
   const [form, setForm] = useState({ username: '', password: '', confirmPassword: '', role: '' });
@@ -95,7 +140,11 @@ export function SignUpForm({ onSubmit, loading = false, error = null }) {
       errors.password = 'Password must be at least 8 characters';
     if (!form.confirmPassword)
       errors.confirmPassword = 'Confirm your password';
-    if (form.password && form.confirmPassword && form.password !== form.confirmPassword)
+    if (
+      form.password &&
+      form.confirmPassword &&
+      form.password !== form.confirmPassword
+    )
       errors.confirmPassword = 'Passwords do not match';
     if (!form.role) errors.role = 'Role is required';
     return errors;
@@ -103,17 +152,23 @@ export function SignUpForm({ onSubmit, loading = false, error = null }) {
   const errors = validate();
 
   const handleChange = (e) => {
-    setForm({...form, [e.target.name]: e.target.value});
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
   const handleBlur = (e) => {
-    setTouched({...touched, [e.target.name]: true});
+    setTouched({ ...touched, [e.target.name]: true });
   };
   const handleSubmit = (e) => {
     e.preventDefault();
-    setTouched({username: true, password: true, confirmPassword: true, role: true});
+    setTouched({
+      username: true,
+      password: true,
+      confirmPassword: true,
+      role: true,
+    });
     setFormError(null);
     if (Object.keys(validate()).length === 0 && !loading) {
-      onSubmit && onSubmit(form).catch(err => setFormError(err.message));
+      onSubmit &&
+        onSubmit(form).catch((err) => setFormError(err.message));
     }
   };
 
@@ -132,9 +187,9 @@ export function SignUpForm({ onSubmit, loading = false, error = null }) {
           disabled={loading}
           autoComplete="username"
         />
-        {touched.username && errors.username &&
+        {touched.username && errors.username && (
           <div className="form-error">{errors.username}</div>
-        }
+        )}
       </div>
       <div className="form-group">
         <label htmlFor="signup-password">Password</label>
@@ -148,9 +203,9 @@ export function SignUpForm({ onSubmit, loading = false, error = null }) {
           disabled={loading}
           autoComplete="new-password"
         />
-        {touched.password && errors.password &&
+        {touched.password && errors.password && (
           <div className="form-error">{errors.password}</div>
-        }
+        )}
       </div>
       <div className="form-group">
         <label htmlFor="signup-confirmPassword">Confirm Password</label>
@@ -164,9 +219,9 @@ export function SignUpForm({ onSubmit, loading = false, error = null }) {
           disabled={loading}
           autoComplete="new-password"
         />
-        {touched.confirmPassword && errors.confirmPassword &&
+        {touched.confirmPassword && errors.confirmPassword && (
           <div className="form-error">{errors.confirmPassword}</div>
-        }
+        )}
       </div>
       <div className="form-group">
         <label htmlFor="signup-role">Role</label>
@@ -179,8 +234,10 @@ export function SignUpForm({ onSubmit, loading = false, error = null }) {
           disabled={loading}
         >
           <option value="">Select a role...</option>
-          {roles.map(option => (
-            <option value={option} key={option}>{option.charAt(0).toUpperCase() + option.slice(1)}</option>
+          {roles.map((option) => (
+            <option value={option} key={option}>
+              {option.charAt(0).toUpperCase() + option.slice(1)}
+            </option>
           ))}
         </select>
         {touched.role && errors.role && (
@@ -192,10 +249,16 @@ export function SignUpForm({ onSubmit, loading = false, error = null }) {
         className="btn"
         disabled={loading || Object.keys(errors).length !== 0}
       >
+        {loading && <Spinner size={17} />}
         {loading ? 'Signing up...' : 'Sign Up'}
       </button>
       {formError && <div className="form-error">{formError}</div>}
       {error && <div className="form-error">{error}</div>}
+      {success && (
+        <div className="form-success" style={{ color: "#409b58", fontWeight: 600, marginTop: 6 }}>
+          {success}
+        </div>
+      )}
     </form>
   );
 }

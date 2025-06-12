@@ -1,5 +1,3 @@
-// App.js: Main app shell. Uses AuthContext to manage authentication state across the app.
-
 import React, { useState } from 'react';
 import { SignInForm, SignUpForm } from './AuthForms';
 import './AuthForms.css';
@@ -19,6 +17,7 @@ function AppShell() {
     logout,
     authLoading,
     authError,
+    authSuccess,
     authFetch,
   } = useAuth();
 
@@ -54,6 +53,12 @@ function AppShell() {
     // eslint-disable-next-line
   }, [isAuthenticated]);
 
+  // Handle logout: return to default view
+  const handleLogout = () => {
+    logout();
+    setView("signin");
+  };
+
   // Render logged-in state
   if (isAuthenticated && currentUser) {
     return (
@@ -64,7 +69,7 @@ function AppShell() {
         </p>
         <button
           className="btn"
-          onClick={logout}
+          onClick={handleLogout}
           style={{ margin: "2em auto 0", display: "block" }}
         >
           Sign Out
@@ -110,9 +115,19 @@ function AppShell() {
         </button>
       </nav>
       {view === "signin" ? (
-        <SignInForm onSubmit={login} loading={authLoading} error={authError} />
+        <SignInForm
+          onSubmit={login}
+          loading={authLoading}
+          error={authError}
+          success={authSuccess && view === "signin" ? authSuccess : null}
+        />
       ) : (
-        <SignUpForm onSubmit={register} loading={authLoading} error={authError} />
+        <SignUpForm
+          onSubmit={register}
+          loading={authLoading}
+          error={authError}
+          success={authSuccess && view === "signup" ? authSuccess : null}
+        />
       )}
     </div>
   );

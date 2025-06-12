@@ -70,3 +70,17 @@
   background: #bfcfe6;
   cursor: not-allowed;
 }
+
+/* Spinner for loading UX in buttons */
+.auth-spinner {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+.form-success {
+  color: #409b58;
+  font-weight: 600;
+  margin-top: 7px;
+  text-align: center;
+  letter-spacing: 0.01em;
+}
