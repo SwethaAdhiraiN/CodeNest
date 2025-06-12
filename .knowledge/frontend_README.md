@@ -1,0 +1,1 @@
+{"is_source_file": true, "file_id": 9, "git_revision": "", "state": 1, "description": "", "external_files": [], "external_methods": [], "published": [], "classes": [], "methods": [], "calls": [], "search-terms": [], "hash": "eeff6dfd98d5411b3f6802338c9187c8", "format-version": 4, "code-base-name": "default", "filename": "frontend/README.md", "knowledge_revision": 17}
