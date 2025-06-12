@@ -10,6 +10,9 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': 'http://localhost:8000'
-    }
+    },
+    allowedHosts: [
+      'vscode-internal-4748-beta.beta01.cloud.kavia.ai'
+    ]
   }
 })
