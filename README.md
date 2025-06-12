@@ -4,29 +4,22 @@ A secure, user-friendly monolithic app for managing reusable code snippets with 
 
 ## Quick Start
 
-1. Build and run with Docker:
+To develop and run CodeNest locally:
 
-    ```bash
-    docker build -t codenest .
-    docker run -p 8000:8000 codenest
+- In one terminal:
+    ```
+    cd backend
+    pip install -r requirements.txt
+    python app.py
+    ```
+- In another terminal:
+    ```
+    cd frontend
+    npm install
+    npm run dev
     ```
 
-2. Or develop locally:
-
-    - In one terminal:
-        ```
-        cd backend
-        pip install -r requirements.txt
-        python app.py
-        ```
-    - In another terminal:
-        ```
-        cd frontend
-        npm install
-        npm run dev
-        ```
-
-Frontend is served from `/frontend/dist`.
+Frontend is served from `/frontend/dist` by default.
 
 Data is stored as JSON files in `backend/data/`.
 
@@ -37,4 +30,4 @@ Data is stored as JSON files in `backend/data/`.
 - Tag, language filtering, full text search, activity feed, upvotes, comments
 - RESTful API for UI, all data in JSON (no external DB)
 - Download tracking, audit logs (admin view)
-- Responsive UI, deployable as a Docker monolith
+- Responsive UI
