@@ -53,10 +53,14 @@ function AppShell() {
     // eslint-disable-next-line
   }, [isAuthenticated]);
 
-  // Handle logout: return to default view
+  // Handle logout: return to default view and redirect to sign-in screen
+  // PUBLIC_INTERFACE
   const handleLogout = () => {
     logout();
+    setMe(null); // Clear user API state
     setView("signin");
+    // Optionally, scroll to top or visually indicate user is logged out
+    // window.location.hash = ""; // Uncomment for hash redirect
   };
 
   // Render logged-in state
