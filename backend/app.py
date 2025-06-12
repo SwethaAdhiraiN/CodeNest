@@ -16,7 +16,20 @@ AUDIT_FILE = os.path.join(DATA_DIR, 'audit.json')
 COMMENTS_FILE = os.path.join(DATA_DIR, 'comments.json')
 SESSIONS_FILE = os.path.join(DATA_DIR, 'sessions.json')
 
+# Ensure data directory exists
 os.makedirs(DATA_DIR, exist_ok=True)
+
+# Initialize all expected JSON files if they do not exist
+def _init_file(path, default):
+    if not os.path.exists(path):
+        with open(path, 'w') as f:
+            json.dump(default, f, indent=2)
+
+_init_file(USERS_FILE, [])
+_init_file(SNIPPETS_FILE, [])
+_init_file(AUDIT_FILE, [])
+_init_file(COMMENTS_FILE, [])
+_init_file(SESSIONS_FILE, [])
 
 # Application and config
 app = Flask(__name__, static_url_path='', static_folder='../frontend/dist')
@@ -36,8 +49,14 @@ def load_json(file_path, default=None):
         return json.load(f)
 
 def save_json(file_path, obj):
-    with open(file_path, 'w') as f:
-        json.dump(obj, f, indent=2)
+    # Try to create directory if missing
+    try:
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        with open(file_path, 'w') as f:
+            json.dump(obj, f, indent=2)
+    except Exception as e:
+        # Log error to stdout, but do not crash server
+        print(f"ERROR: Failed to save {file_path}: {e}")
 
 def get_new_id():
     return str(uuid.uuid4())
