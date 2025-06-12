@@ -384,17 +384,20 @@ def serve_frontend(u_path):
     Serve frontend static files (PRODUCTION ONLY).
 
     In development, frontend should be served from Vite dev server (port 5173).
-    If a frontend asset is requested from Flask in dev mode, show a helpful message.
+    If any request hits Flask for frontend assets (JS, CSS, etc.) in dev mode,
+    immediately show an error and never try to route or serve files.
     """
     if is_dev_mode():
         # Help developer: if this route is hit in development, warn about dev port usage
+        # Respond 400 with HTML message
         return (
-            "You are running in development mode. "
-            "Frontend assets (including main.jsx and @react-refresh) "
-            "should be requested from the Vite dev server at http://localhost:5173/.<br>"
-            "Do NOT access the frontend through http://localhost:8000.<br>"
+            "You are running in <b>development mode</b>.<br>"
+            "Frontend assets (including <code>main.jsx</code> and <code>@react-refresh</code>) "
+            "should <b>always</b> be requested from the Vite dev server on <a href='http://localhost:5173'>port 5173</a>.<br>"
+            "<b>Do NOT</b> access the frontend through <code>http://localhost:8000/</code>.<br>"
             "Open <a href='http://localhost:5173'>http://localhost:5173</a> in your browser.<br>"
-            "If you see this message, your assets are being misrouted.<br>", 400
+            "If you see this message, your requests for static assets are being misrouted.<br>"
+            , 400
         )
     # Production: Serve built frontend
     if u_path and os.path.exists(os.path.join(app.static_folder, u_path)):
