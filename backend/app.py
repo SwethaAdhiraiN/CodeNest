@@ -357,4 +357,6 @@ def serve_frontend(u_path):
 ############## Main ##############
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000, debug=True)
+    # The Flask development reloader is disabled to prevent repetitive reloads caused by
+    # multiple rapid file-change events from editors or certain environments.
+    app.run(host="0.0.0.0", port=8000, debug=True, use_reloader=False)
